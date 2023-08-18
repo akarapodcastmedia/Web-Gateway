@@ -44,6 +44,77 @@ route.post('/upload/profile',TokenValidator,upload.single("profile"),async(req,r
          })
      }  
 })
+// ====================================
+// get profile 
+//=====================================
+route.get('/get/profile',TokenValidator,async(req,res)=>{
+    const token = jsonwebtoken.sign({username : req.session.username,user:req.session.user,role:req.session.role,email:req.session.email},process.env.PROGRAM_TOKEN_SECRET,{expiresIn : '5min'});
+    axios.defaults.headers.common['Authorization'] = `bearer ${token}`;
+    try{
+        const result = await axios.get("http://localhost:4000/discover/podcaster/get/profile",
+        {
+            headers : {
+                "content-type" : "application/json"
+            }
+        }
+        );
+        return res.json(result.data);
+    }catch(e){
+        return res.json({
+            error : true,
+            message : e.message
+        })
+    }
+
+})
+//======================================
+// delete profile 
+//======================================
+route.post('/delete/profile',TokenValidator,async(req,res)=>{
+    // check if the podcaster_id is available
+    if(req.body.podcaster_id){
+        const podcaster_id = req.body.podcaster_id;
+        const token = jsonwebtoken.sign({user:req.session.user,role:req.session.role,email:req.session.email},process.env.PROGRAM_TOKEN_SECRET,{expiresIn : '5min'});
+        axios.defaults.headers.common['Authorization'] = `bearer ${token}`;
+        //make the axios request
+        try{
+            const result = await axios.post("http://localhost:4000/discover/podcaster/delete/profile",{
+                    podcaster_id : podcaster_id  
+            },{
+                headers : {
+                    "content-type" : "application/json"
+                }
+            });
+        // if data get success 
+        return res.json(result.data)
+        }catch(e){
+            return res.json({
+                error : true,
+                message : e.message
+            })
+        } 
+    }else{
+        const token = jsonwebtoken.sign({user:req.session.user,role:req.session.role,email:req.session.email},process.env.PROGRAM_TOKEN_SECRET,{expiresIn : '5min'});
+        axios.defaults.headers.common['Authorization'] = `bearer ${token}`;
+        //make the axios request
+        try{
+            const result = await axios.post("http://localhost:4000/discover/podcaster/delete/profile",{
+                    podcaster_id : null 
+            },{
+                headers : {
+                    "content-type" : "application/json"
+                }
+            });
+        // if data get success 
+        return res.json(result.data)
+        }catch(e){
+            return res.json({
+                error : true,
+                message : e.message
+            })
+        } 
+    }
+})
 //======================================
 // update profile 
 //======================================

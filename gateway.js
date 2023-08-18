@@ -24,7 +24,8 @@ gateway.use(express.urlencoded({extended : true}));
 const cors = require("cors");
 gateway.set("trust proxy",1);
 gateway.use(cors({
-    origin : [process.env.cors_url],
+    origin : ["*","http://localhost:3000"],
+    // origin : [process.env.cors_url],
     methods : ["GET","POST","PUT","DELETE"],
     credentials : true
 }));
@@ -51,8 +52,8 @@ gateway.use(session({
         prefix : "akara:"
     }),
     cookie : {
-    secure: true,
-	sameSite: "none",
+    secure: false,
+	// sameSite: "none",
     maxAge : 1000*60*60*24    
     }
 }));
